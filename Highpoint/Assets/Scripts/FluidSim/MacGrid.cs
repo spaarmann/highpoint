@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Text;
+using UnityEngine;
 
 namespace Highpoint {
     public class MacGrid {
@@ -21,6 +23,10 @@ namespace Highpoint {
         private float[] velocityY;
         private float[] velocityZ;
 
+        private const int CTYPE_SIMULATE = 0;
+        private const int CTYPE_SOLID = 1;
+        private byte[] cellType;
+
         public MacGrid(Vector3 size, float step) {
             Size = size;
             StepSize = step;
@@ -31,6 +37,7 @@ namespace Highpoint {
             velocityX = new float[(GridSize.x + 1) * GridSize.y * GridSize.z];
             velocityY = new float[GridSize.x * (GridSize.y + 1) * GridSize.z];
             velocityZ = new float[GridSize.x * GridSize.y * (GridSize.z + 1)];
+            cellType = new byte[GridSize.x * GridSize.y * GridSize.z];
         }
 
         public float PressureAtCenter(int x, int y, int z) {
@@ -38,27 +45,46 @@ namespace Highpoint {
         }
 
         public float VelocityRight(int x, int y, int z) {
-            return pressure[x + 1 + GridSize.x * (y + GridSize.y * z)];
+            return pressure[GetArrayIndex(x + 1 , y, z)];
         }
 
         public float VelocityLeft(int x, int y, int z) {
-            return velocityX[x + GridSize.x * (y + GridSize.y * z)];
+            return velocityX[GetArrayIndex(x, y, z)];
         }
 
         public float VelocityUp(int x, int y, int z) {
-            return velocityY[x + GridSize.x * (y + 1 + GridSize.y * z)];
+            return velocityY[GetArrayIndex(x, y + 1, z)];
         }
 
         public float VelocityDown(int x, int y, int z) {
-            return velocityY[x + GridSize.x * (y + GridSize.y * z)];
+            return velocityY[GetArrayIndex(x, y, z)];
         }
 
         public float VelocityForward(int x, int y, int z) {
-            return velocityZ[x + GridSize.x * (y + GridSize.y * (z + 1))];
+            return velocityZ[GetArrayIndex(x, y, z + 1)];
         }
 
         public float VelocityBackward(int x, int y, int z) {
-            return velocityZ[x + GridSize.x * (y + GridSize.y * z)];
+            return velocityZ[GetArrayIndex(x, y, z)];
+        }
+
+        public bool IsSolid(int x, int y, int z) {
+            return cellType[GetArrayIndex(x, y, z)] == CTYPE_SOLID;
+        }
+
+        public void MarkSolidCells(Predicate<(float, float, float)> markerFunction) {
+            for (var x = 0; x < GridSize.x; x++) {
+                for (var y = 0; y < GridSize.y; y++) {
+                    for (var z = 0; z < GridSize.z; z++) {
+                        if (markerFunction((x * StepSize, y * StepSize, z * StepSize)))
+                            cellType[GetArrayIndex(x, y, z)] = CTYPE_SOLID;
+                    }
+                }
+            }
+        }
+
+        private int GetArrayIndex(int x, int y, int z) {
+            return x + GridSize.x * (y + GridSize.y * z);
         }
 
         public override string ToString() {

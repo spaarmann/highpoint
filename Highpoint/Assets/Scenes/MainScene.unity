@@ -323,8 +323,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed993a31f73aec14ba1cb1549ff83823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ContainerSize: {x: 3, y: 1.5, z: 3}
+  ContainerSize: {x: 5, y: 2, z: 5}
   GridStepSize: 0.1
+  SolidRegions:
+  - Min: {x: 0, y: 0, z: 0}
+    Max: {x: 5, y: 0.2, z: 5}
+  - Min: {x: 0, y: 0, z: 0}
+    Max: {x: 0.2, y: 2, z: 5}
+  - Min: {x: 0, y: 0, z: 0}
+    Max: {x: 5, y: 2, z: 0.2}
+  - Min: {x: 4.8, y: 0, z: 0}
+    Max: {x: 5, y: 2, z: 5}
+  - Min: {x: 0, y: 0, z: 4.8}
+    Max: {x: 5, y: 2, z: 5}
 --- !u!4 &1158248021
 Transform:
   m_ObjectHideFlags: 0
