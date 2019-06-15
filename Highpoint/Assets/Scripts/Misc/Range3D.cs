@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using UnityEngine;
 
 namespace Highpoint.Misc {
@@ -13,8 +12,8 @@ namespace Highpoint.Misc {
                    && x < Max.x && y < Max.y && z < Max.z;
         }
 
-        public bool Contains((float x, float y, float z) t) {
-            return Contains(t.x, t.y, t.z);
+        public bool Contains(Vector3 p) {
+            return Contains(p.x, p.y, p.z);
         }
     }
 }

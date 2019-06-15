@@ -336,6 +336,15 @@ MonoBehaviour:
     Max: {x: 5, y: 2, z: 5}
   - Min: {x: 0, y: 0, z: 4.8}
     Max: {x: 5, y: 2, z: 5}
+  Sources:
+  - Position: {x: 2.5, y: 1.99, z: 2.5}
+    FlowRight: 0
+    FlowLeft: 0
+    FlowUp: 0
+    FlowDown: 2
+    FlowForward: 0
+    FlowBackward: 0
+  Sinks: []
 --- !u!4 &1158248021
 Transform:
   m_ObjectHideFlags: 0

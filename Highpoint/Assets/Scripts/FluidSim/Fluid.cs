@@ -1,5 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using Highpoint.Math;
 using Highpoint.Misc;
 using UnityEngine;
 
@@ -8,7 +8,9 @@ namespace Highpoint {
         public Vector3 ContainerSize = Vector3.one;
         public float GridStepSize = 0.1f;
 
-        public Range3D[] SolidRegions; 
+        public Range3D[] SolidRegions;
+        public Source[] Sources;
+        public Vector3[] Sinks;
 
         private MacGrid grid;
         private Simulator simulator;
@@ -19,7 +21,10 @@ namespace Highpoint {
 
             grid.MarkSolidCells(t => SolidRegions.Any(r => r.Contains(t)));
 
-            simulator = new Simulator(this);
+            foreach (var source in Sources) grid.AddSource(source);
+            foreach (var sink in Sinks) grid.AddSink(sink);
+
+            simulator = new Simulator(this, 0.1f);
         }
 
         private void Update() { }
@@ -30,8 +35,20 @@ namespace Highpoint {
             Gizmos.DrawWireCube(0.5f * ContainerSize, ContainerSize);
 
             Gizmos.color = Colors.VolumeSolid;
-            foreach (var solid in SolidRegions) {
+            if (SolidRegions != null) foreach (var solid in SolidRegions) {
                 Gizmos.DrawCube(0.5f * (solid.Max + solid.Min), solid.Max - solid.Min);
+            }
+
+            Gizmos.color = Colors.CellSource;
+            if (Sources != null) foreach (var source in Sources) {
+                Gizmos.DrawCube(GridStepSize * ((Vector3) Vec3Int.FloorToInt(source.Position / GridStepSize) + Vector3.one * 0.5f),
+                    Vector3.one * GridStepSize);
+            }
+
+            Gizmos.color = Colors.CellSink;
+            if (Sinks != null) foreach (var sink in Sinks) {
+                Gizmos.DrawCube(GridStepSize * ((Vector3) Vec3Int.FloorToInt(sink / GridStepSize) + Vector3.one * 0.5f),
+                    Vector3.one * GridStepSize);
             }
         }
 
