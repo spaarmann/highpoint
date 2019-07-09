@@ -5,29 +5,47 @@ using UnityEngine;
 
 namespace Highpoint {
     public class Fluid : MonoBehaviour {
+        [Header("Simulation Volume Setup")]
         public Vector3 ContainerSize = Vector3.one;
         public float GridStepSize = 0.1f;
 
+        [Header("Simulation Parameters")]
+        public float Gravity = Physics.gravity.y;
+        public int SimStepsPerFrame = 5;
+
+        [Header("Fluid Setup")]
         public Range3D[] SolidRegions;
         public Source[] Sources;
         public Vector3[] Sinks;
+        public MacGrid Grid { get; private set; }
 
-        private MacGrid grid;
+        public float GravityGrid;
+
         private Simulator simulator;
+        private const int targetFPS = 60;
 
         private void Start() {
-            grid = new MacGrid(ContainerSize, GridStepSize);
-            Debug.Log(grid);
+            Grid = new MacGrid(ContainerSize, GridStepSize);
+            Debug.Log(Grid);
 
-            grid.MarkSolidCells(t => SolidRegions.Any(r => r.Contains(t)));
+            Grid.MarkSolidCells(t => SolidRegions.Any(r => r.Contains(t)));
 
-            foreach (var source in Sources) grid.AddSource(source);
-            foreach (var sink in Sinks) grid.AddSink(sink);
+            foreach (var source in Sources) Grid.AddSource(source);
+            foreach (var sink in Sinks) Grid.AddSink(sink);
 
-            simulator = new Simulator(this, 0.1f);
+            simulator = new Simulator(this);
+            Application.targetFrameRate = targetFPS;
+
+            GravityGrid = Grid.MetersToGrid(Gravity);
         }
 
-        private void Update() { }
+        private void Update() {
+            // TODO better time step handling
+            float step = (1f / targetFPS) / SimStepsPerFrame;
+            for (var i = 0; i < SimStepsPerFrame; i++) {
+                simulator.SimulateStep(step);
+            }
+        }
 
         private void OnDrawGizmos() {
             Gizmos.matrix = transform.localToWorldMatrix;
@@ -61,6 +79,8 @@ namespace Highpoint {
                 SolidRegions[i].Max.y = Mathf.Min(ContainerSize.y, SolidRegions[i].Max.y);
                 SolidRegions[i].Max.z = Mathf.Min(ContainerSize.z, SolidRegions[i].Max.z);
             }
+
+            GravityGrid = Gravity / GridStepSize;
         }
     }
 }

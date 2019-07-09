@@ -21,12 +21,24 @@ namespace Highpoint.Math {
             return new Vec3Int(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
         }
 
+        public static Vector3 operator -(Vector3 lhs, Vec3Int rhs) {
+            return new Vector3(lhs.x - rhs.x, lhs.y - lhs.y, lhs.z - lhs.z);
+        }
+
         public static Vec3Int operator *(Vec3Int lhs, Vec3Int rhs) {
             return new Vec3Int(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
         }
 
         public static Vec3Int operator *(Vec3Int lhs, int rhs) {
             return new Vec3Int(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
+        }
+
+        public static Vector3 operator *(Vec3Int lhs, float rhs) {
+            return new Vector3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
+        }
+
+        public static Vector3 operator /(Vector3 lhs, Vec3Int rhs) {
+            return new Vector3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
         }
 
         public static bool operator ==(Vec3Int lhs, Vec3Int rhs) {
@@ -68,13 +80,13 @@ namespace Highpoint.Math {
             return $"({x}, {y}, {z})";
         }
 
-        public static readonly Vec3Int Right = new Vec3Int(1, 0, 0);
-        public static readonly Vec3Int Left = new Vec3Int(-1, 0, 0);
-        public static readonly Vec3Int Up = new Vec3Int(0, 1, 0);
-        public static readonly Vec3Int Down = new Vec3Int(0, -1, 0);
-        public static readonly Vec3Int Forward = new Vec3Int(0, 0, 1);
-        public static readonly Vec3Int Backward = new Vec3Int(0, 0, -1);
-        public static readonly Vec3Int One = new Vec3Int(1, 1, 1);
-        public static readonly Vec3Int Zero = new Vec3Int(0, 0, 0);
+        public static readonly Vec3Int right = new Vec3Int(1, 0, 0);
+        public static readonly Vec3Int left = new Vec3Int(-1, 0, 0);
+        public static readonly Vec3Int up = new Vec3Int(0, 1, 0);
+        public static readonly Vec3Int down = new Vec3Int(0, -1, 0);
+        public static readonly Vec3Int forward = new Vec3Int(0, 0, 1);
+        public static readonly Vec3Int backward = new Vec3Int(0, 0, -1);
+        public static readonly Vec3Int one = new Vec3Int(1, 1, 1);
+        public static readonly Vec3Int zero = new Vec3Int(0, 0, 0);
     }
 }
