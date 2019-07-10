@@ -78,11 +78,40 @@ namespace Highpoint {
             VelocityNextZ = new float[GridSize.x * GridSize.y * (GridSize.z + 1)];
         }
 
+        // These accessors are relatively simple averaging, just have to be careful
+        // to get the indices correct.
         public Vector3 VelocityAtCenter(int x, int y, int z) {
             return new Vector3(
                 (VelocityX[Idx(x, y, z)] + VelocityX[Idx(x + 1, y, z)]) / 2f,
                 (VelocityY[Idx(x, y, z)] + VelocityY[Idx(x, y + 1, z)]) / 2f,
                 (VelocityZ[Idx(x, y, z)] + VelocityZ[Idx(x, y, z + 1)]) / 2f
+            );
+        }
+        public Vector3 VelocityAtStaggeredX(int x, int y, int z) {
+            return new Vector3(
+                VelocityX[Idx(x, y, z)],
+                (VelocityY[Idx(x - 1, y, z)] + VelocityY[Idx(x - 1, y + 1, z)]
+                                             + VelocityY[Idx(x, y, z)] + VelocityY[Idx(x, y + 1, z)]) / 4f,
+                (VelocityZ[Idx(x - 1, y, z)] + VelocityZ[Idx(x - 1, y, z + 1)]
+                                             + VelocityZ[Idx(x, y, z)] + VelocityZ[Idx(x, y, z + 1)]) / 4f
+            );
+        }
+        public Vector3 VelocityAtStaggeredY(int x, int y, int z) {
+            return new Vector3(
+                (VelocityX[Idx(x, y - 1, z)] + VelocityX[Idx(x + 1, y - 1, z)]
+                                             + VelocityX[Idx(x, y, z)] + VelocityX[Idx(x + 1, y, z)]) / 4f,
+                VelocityY[Idx(x, y, z)],
+                (VelocityZ[Idx(x, y - 1, z)] + VelocityZ[Idx(x, y - 1, z + 1)]
+                                             + VelocityZ[Idx(x, y, z)] + VelocityZ[Idx(x, y, z + 1)]) / 4f
+            );
+        }
+        public Vector3 VelocityAtStaggeredZ(int x, int y, int z) {
+            return new Vector3(
+                (VelocityX[Idx(x, y, z - 1)] + VelocityX[Idx(x + 1, y, z - 1)]
+                                             + VelocityX[Idx(x, y, z)] + VelocityX[Idx(x + 1, y, z)]) / 4f,
+                (VelocityY[Idx(x, y, z - 1)] + VelocityY[Idx(x, y + 1, z - 1)]
+                 + VelocityY[Idx(x, y, z)] + VelocityY[Idx(x, y + 1, z)]) / 4f,
+                VelocityZ[Idx(x, y, z)]
             );
         }
 

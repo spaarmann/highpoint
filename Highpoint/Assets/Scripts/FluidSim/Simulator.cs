@@ -16,10 +16,9 @@ namespace Highpoint {
             // We split the full differential equation we're solving and approximate
             // each summand separately.
             // TODO: Argument accuracy of this.
-            /*Advect(dt, grid.VelocityX, grid.VelocityNextX, true, Axis.X);
-            Advect(dt, grid.VelocityY, grid.VelocityNextY, true, Axis.Y);
-            Advect(dt, grid.VelocityZ, grid.VelocityNextZ, true, Axis.Z);*/
-            // TODO: Is advecting velocity first correct? When should we advect pressure?
+            AdvectStaggeredX(dt, grid.VelocityX, grid.VelocityNextX);
+            AdvectStaggeredY(dt, grid.VelocityY, grid.VelocityNextY);
+            AdvectStaggeredZ(dt, grid.VelocityZ, grid.VelocityNextZ);
             grid.SwapBuffers(velocity: true);
             AddBodyForces(dt);
             grid.SwapBuffers(velocityY: true);
@@ -61,7 +60,46 @@ namespace Highpoint {
         }
 
         // The other advection routines are essentially the same, but accounting for interpolation differences
-        // (in both velocity and the field being advected) due to 
+        // (in both velocity and the field being advected) due to the staggered nature of the grid.
+        private void AdvectStaggeredX(float dt, float[] current, float[] next) {
+            for (var x = 0; x < grid.GridSize.x + 1; x++) {
+                for (var y = 0; y < grid.GridSize.y; y++) {
+                    for (var z = 0; z < grid.GridSize.z; z++) {
+                        Vector3 xG = new Vector3(x, y, z);
+                        Vector3 uG = grid.VelocityAtStaggeredX(x, y, z);
+                        Vector3 xP = xG - dt * uG;
+
+                        next[grid.Idx(x, y, z)] = Interpolater.Lerp(grid, current, xP, staggerX: true);
+                    }
+                }
+            }
+        }
+        private void AdvectStaggeredY(float dt, float[] current, float[] next) {
+            for (var x = 0; x < grid.GridSize.x; x++) {
+                for (var y = 0; y < grid.GridSize.y + 1; y++) {
+                    for (var z = 0; z < grid.GridSize.z; z++) {
+                        Vector3 xG = new Vector3(x, y, z);
+                        Vector3 uG = grid.VelocityAtStaggeredY(x, y, z);
+                        Vector3 xP = xG - dt * uG;
+
+                        next[grid.Idx(x, y, z)] = Interpolater.Lerp(grid, current, xP, staggerY: true);
+                    }
+                }
+            }
+        }
+        private void AdvectStaggeredZ(float dt, float[] current, float[] next) {
+            for (var x = 0; x < grid.GridSize.x; x++) {
+                for (var y = 0; y < grid.GridSize.y; y++) {
+                    for (var z = 0; z < grid.GridSize.z + 1; z++) {
+                        Vector3 xG = new Vector3(x, y, z);
+                        Vector3 uG = grid.VelocityAtStaggeredZ(x, y, z);
+                        Vector3 xP = xG - dt * uG;
+
+                        next[grid.Idx(x, y, z)] = Interpolater.Lerp(grid, current, xP, staggerZ: true);
+                    }
+                }
+            }
+        }
 
         private void AddBodyForces(float dt) {
             var gravityStep = dt * fluid.GravityGrid;
